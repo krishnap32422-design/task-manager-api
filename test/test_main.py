@@ -1,9 +1,11 @@
 
+import os
 from unittest.mock import patch
 
-# Prevent main.py from creating tables in the real database
-with patch("sqlalchemy.schema.MetaData.create_all"):
-    import main
+# Provide a temporary database URL for CI
+with patch.dict(os.environ, {"DATABASE_URL": "sqlite://"}):
+    with patch("sqlalchemy.schema.MetaData.create_all"):
+        import main
 
 from fastapi.testclient import TestClient
 from sqlalchemy import Column, Integer, String, Boolean
@@ -13,7 +15,6 @@ from test_database import (
     test_engine,
     TestingSessionLocal,
 )
-
 
 # Define the Task table in the temporary test database
 class TestTask(TestBase):
